@@ -1,0 +1,21 @@
+// use prisma-8
+
+model Member {
+  id           String        @id @default(sql`gen_random_uuid()`)
+  cardNumber   String        @unique
+  fullName     String
+  email        String        @unique
+  reservations Reservation[]
+}
+
+model Reservation {
+  id           String   @id @default(sql`gen_random_uuid()`)
+  bookTitle    String
+  openLibraryId String  // Stores the unique OL key/ID from the API
+  coverId      Int?     // Optional: store cover_i for displaying book covers!
+  status       String   @default("CONFIRMED")
+  createdAt    DateTime @default(now())
+  
+  memberId     String
+  member       Member   @relation(fields: [memberId], references: [id])
+}

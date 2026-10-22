@@ -1,0 +1,262 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.Member",
+    "label": "Create table \"Member\"",
+    "summary": "Creates table \"Member\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Member"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Member\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Member\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Member\"",
+        "sql": "CREATE TABLE \"public\".\"Member\" (\n  \"cardNumber\" text NOT NULL,\n  \"email\" text NOT NULL,\n  \"fullName\" text NOT NULL,\n  \"id\" text DEFAULT (gen_random_uuid()) NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Member\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Member\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Reservation",
+    "label": "Create table \"Reservation\"",
+    "summary": "Creates table \"Reservation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Reservation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Reservation\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Reservation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Reservation\"",
+        "sql": "CREATE TABLE \"public\".\"Reservation\" (\n  \"bookId\" text NOT NULL,\n  \"bookTitle\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text DEFAULT (gen_random_uuid()) NOT NULL,\n  \"memberId\" text NOT NULL,\n  \"status\" text DEFAULT 'CONFIRMED' NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Reservation\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Reservation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Member.Member_cardNumber_key",
+    "label": "Add unique constraint on \"Member\" (cardNumber)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Member_cardNumber_key",
+        "table": "Member"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Member_cardNumber_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Member_cardNumber_key",
+          "public",
+          "\"public\".\"Member\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Member_cardNumber_key\"",
+        "sql": "ALTER TABLE \"public\".\"Member\" ADD CONSTRAINT \"Member_cardNumber_key\" UNIQUE (\"cardNumber\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Member_cardNumber_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Member_cardNumber_key",
+          "public",
+          "\"public\".\"Member\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Member.Member_email_key",
+    "label": "Add unique constraint on \"Member\" (email)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Member_email_key",
+        "table": "Member"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Member_email_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Member_email_key",
+          "public",
+          "\"public\".\"Member\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Member_email_key\"",
+        "sql": "ALTER TABLE \"public\".\"Member\" ADD CONSTRAINT \"Member_email_key\" UNIQUE (\"email\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Member_email_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Member_email_key",
+          "public",
+          "\"public\".\"Member\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Reservation.Reservation_memberId_idx_76b3c263",
+    "label": "Create index \"Reservation_memberId_idx_76b3c263\" on \"Reservation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Reservation_memberId_idx_76b3c263",
+        "table": "Reservation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Reservation_memberId_idx_76b3c263\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Reservation_memberId_idx_76b3c263\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Reservation_memberId_idx_76b3c263\"",
+        "sql": "CREATE INDEX \"Reservation_memberId_idx_76b3c263\" ON \"public\".\"Reservation\" (\"memberId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Reservation_memberId_idx_76b3c263\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Reservation_memberId_idx_76b3c263\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Reservation.Reservation_memberId_fkey",
+    "label": "Add foreign key \"Reservation_memberId_fkey\" on \"Reservation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Reservation_memberId_fkey",
+        "table": "Reservation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Reservation_memberId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Reservation_memberId_fkey",
+          "public",
+          "\"public\".\"Reservation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Reservation_memberId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Reservation\"\nADD CONSTRAINT \"Reservation_memberId_fkey\"\nFOREIGN KEY (\"memberId\")\nREFERENCES \"public\".\"Member\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Reservation_memberId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Reservation_memberId_fkey",
+          "public",
+          "\"public\".\"Reservation\""
+        ]
+      }
+    ]
+  }
+]
