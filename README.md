@@ -88,6 +88,7 @@ http://localhost:3000
 ### Example request
 
 > Please reserve *Breaking the Habit of Being Yourself* by Dr. Joe Dispenza using my library card number.
+![Reservation confirmation](docs/screenshot_book_reservation.png)
 
 The chatbot can return a confirmation when the reservation is successfully created.
 
