@@ -1,9 +1,8 @@
 'use client';
  
 import { useChat } from '@ai-sdk/react';
-import { useState, Suspense } from 'react';
-import  Weather  from './Weather'
-import { WeatherData } from './Weather'
+import { useState } from 'react';
+
 
 import {
   Conversation,
@@ -54,25 +53,7 @@ export default function Chat() {
             {part.text}
           </MessageResponse>
         );
-      case "tool-getWeather":  // Tool parts are named "tool-TOOLNAME"
-        // For now, show raw JSON to see what we're working with
-        return (
-                (part.state === 'output-available' && part.output)? (<Weather key={part.toolCallId || `${message.id}-${i}`} weatherData={part.output as WeatherData} />) :
-                (
-               <Tool key={part.toolCallId || `${message.id}-${i}`}>
-              <ToolHeader type={part.type} state={part.state} />
-              <ToolContent>
-               <ToolInput input={part.input} />
-                <ToolOutput
-                  output={JSON.stringify(part.output, null, 2)}
-                   errorText={part.errorText}
-                />
-              </ToolContent>
-              </Tool>
-                )
-              
-      
-            );
+
       default:
         return null;
     }
